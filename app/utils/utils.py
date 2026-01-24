@@ -1,4 +1,5 @@
-from ..main import greeting
+def greeting():
+    print("hello!")
 
-if __name__ == "__main__":
-    greeting()
+
+x = 5

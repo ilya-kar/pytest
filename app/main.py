@@ -1,6 +1,3 @@
-def greeting():
-    print("yes")
+from .utils import utils
 
-
-if __name__ == "__main__":
-    greeting()
+utils.greeting()
