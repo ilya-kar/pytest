@@ -6,13 +6,13 @@ from dataclasses import dataclass
 @dataclass
 class Node:
     key: int
-    left: None | Node = None
-    right: None | Node = None
+    left: Node | None = None
+    right: Node | None = None
 
 
 class BST:
     def __init__(self, elements: list[int] | None = None):
-        self._root: None | Node = None
+        self._root: Node | None = None
         self._size: int = 0
         if elements:
             for key in elements:
@@ -30,7 +30,7 @@ class BST:
     def __contains__(self, key: int):
         return bool(self._find_node(key))
 
-    def _inorder(self, node: None | Node):
+    def _inorder(self, node: Node | None):
         if not node:
             return
         yield from self._inorder(node.left)
@@ -53,7 +53,7 @@ class BST:
 
         return None
 
-    def _insert(self, node: None | Node, key: int) -> tuple[Node, bool]:
+    def _insert(self, node: Node | None, key: int) -> tuple[Node, bool]:
         if not node:
             return Node(key), True
         if key < node.key:
@@ -118,27 +118,30 @@ class BST:
 
         return predecessor
 
-    def _remove(self, root: None | Node, key: int) -> tuple[None | Node, bool]:
-        if not root:
+    def _extract_min(self, node: Node) -> tuple[Node, Node | None]:
+        if not node.left:
+            return node, node.right
+        min_node, node.left = self._extract_min(node.left)
+        return min_node, node
+
+    def _remove(self, node: Node | None, key: int) -> tuple[Node | None, bool]:
+        if not node:
             return None, False
 
-        if key < root.key:
-            root.left, removed = self._remove(root.left, key)
-        elif key > root.key:
-            root.right, removed = self._remove(root.right, key)
+        if key < node.key:
+            node.left, removed = self._remove(node.left, key)
+        elif key > node.key:
+            node.right, removed = self._remove(node.right, key)
         else:
             removed = True
-            if root.left and root.right:
-                root.key = self._min_node(root.right).key
-                root.right, _ = self._remove(root.right, root.key)
-            elif root.left:
-                root = root.left
-            elif root.right:
-                root = root.right
-            else:
-                root = None
+            if not node.right:
+                return node.left, removed
+            if not node.left:
+                return node.right, removed
+            min_node, node.right = self._extract_min(node.right)
+            node.key = min_node.key
 
-        return root, removed
+        return node, removed
 
     def remove(self, key: int):
         self._root, removed = self._remove(self._root, key)

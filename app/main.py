@@ -7,7 +7,7 @@ def test_bst_advanced():
     elements = [50, 30, 70, 20, 40, 60, 80, 10, 35, 45]
     for e in elements:
         assert tree.insert(e), f"Failed to insert {e}"
-    print(tree)
+
     # Проверка размера
     assert len(tree) == 10
 
